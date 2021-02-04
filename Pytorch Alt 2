@@ -1,0 +1,49 @@
+def to_torch(x):
+    x1 = np.array(x)
+    x2 = torch.from_numpy(x1)
+    return x2
+
+X_train_p = to_torch(X_train_p)
+y_train_p = to_torch(y_train_p)
+X_test_p = to_torch(X_test_p)
+y_test_p = to_torch(y_test_p)
+
+## the model
+
+cols = X_train_p.shape[1]
+
+
+NN_2 = torch.nn.Sequential(
+    torch.nn.Linear(cols, 50),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(p=0.05),
+    torch.nn.Linear(50, 50),
+    torch.nn.ReLU(),
+    torch.nn.Dropout(p=0.05),
+    torch.nn.Linear(50, 1),
+    torch.nn.Sigmoid()  )
+
+    
+criterion = torch.nn.BCELoss()
+
+learning_rate = 1e-4
+
+optimizer = torch.optim.Adam(NN_2.parameters(), lr=learning_rate)
+
+
+l_iterations = []
+l_loss = [] 
+
+for i in range(3000):
+    y_pred = NN_2(X_train_p.float())
+
+    loss = criterion(y_pred, y_train_p.float())
+    if i % 100 == 99:
+        print(i, loss.item())
+        
+    l_iterations.append(i)
+    l_loss.append(loss)
+        
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
