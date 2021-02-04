@@ -1,0 +1,92 @@
+#########
+## NN  ##
+#########
+
+
+import torch
+import torch.optim as optim
+import torch.nn as nn
+from torch.autograd import variable
+import torch.nn.functional as F
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+df_pca = pd.read_csv(r'C:\Users\Nico\Documents\Data\covid_df_pca.csv')
+del df_pca['Unnamed: 0']
+
+X_p = np.array(df_pca.drop('died', axis = 1))
+y_p = df_pca['died'].values
+
+X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_p, y_p, test_size=0.3, random_state=30)
+
+
+## defining the net 
+
+dim_in = X_train_p.shape[1]
+
+
+class MeinNetz(nn.Module)  :# erbt von module 
+    def __init__(self):
+        super(MeinNetz, self).__init__()
+        # layer
+        self.lin1 = nn.Linear(dim_in, 10) 
+        self.lin2 = nn.Linear(10,20)  
+        self.lin3 = nn.Linear(20,20)  
+        self.lin4 = nn.Linear(20,10)
+        self.lin5 = nn.Linear(10,1)
+        
+    def forward(self, x):
+        # forward pass hier - backprop später
+        x = F.tanh(self.lin1(x))
+        x = F.tanh(self.lin2(x))
+        x = F.tanh(self.lin3(x))
+        x = F.tanh(self.lin4(x))
+        x = torch.sigmoid(self.lin5(x))  # letzte ohen actiovation
+        return x
+        
+    def num_flat_features(self, x):
+        # für 
+        size = x.size()[1:]      # richtige batch dim hier definieren 
+        num = 1
+        
+        for i in size:
+            num *= i  # 
+        return num
+
+netz = MeinNetz()
+    
+print(netz)  # structure    
+
+###
+import os
+
+
+if os.path.isfile('Netz1.pt'):
+    netz = torch.load('Netz1.pt')
+###
+    
+### Calling the NN  ###
+   
+for i in range(1000):
+    input = variable(X_train_p)
+    
+    out = netz(input.float())
+    
+    y = variable(y_train_p)
+     
+    criterion = nn.BCELoss()
+    
+    loss = criterion(out, y.float())
+    
+    print(loss)   # nur eine Zahl da MSE
+    
+    #l_iterations.append(i)
+    #l_loss.append(loss)
+    
+    netz.zero_grad()
+    optimizer = optim.Adam(netz.parameters(), lr = 0.05)  #als Beispiel 
+    optimizer.step()
+
+
+
