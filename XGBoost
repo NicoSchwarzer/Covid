@@ -1,0 +1,43 @@
+#############
+## XGBoost ##
+#############
+
+from numpy import loadtxt
+from xgboost import XGBClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+
+##
+xg = XGBClassifier()
+xg.fit(X_train, y_train)
+
+xg_pred = xg.predict(X_test)
+predictions = [round(value) for value in xg_pred]
+
+accuracy = accuracy_score(y_test, predictions)
+print("Accuracy: %.2f%%" % (accuracy * 100.0))
+
+## 94%
+
+## reduced dataset
+
+xg_s = XGBClassifier()
+xg_s.fit(X_train_s, y_train_s)
+
+xg_pred_s = xg_s.predict(X_test_s)
+predictions_s = [round(value) for value in xg_pred_s]
+
+accuracy_s = accuracy_score(y_test_s, predictions_s)
+print("Accuracy: %.2f%%" % (accuracy_s * 100.0))
+
+## pca-df
+
+xg_p = XGBClassifier()
+xg_p.fit(X_train_p, y_train_p)
+
+xg_pred_p = xg_p.predict(X_test_p)
+predictions_p = [round(value) for value in xg_pred_p]
+
+accuracy_p = accuracy_score(y_test_p, predictions_p)
+print("Accuracy: %.2f%%" % (accuracy_p * 100.0))
