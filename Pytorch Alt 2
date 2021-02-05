@@ -47,3 +47,8 @@ for i in range(3000):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
+
+## 
+import matplotlib.pyplot as plt
+
+plt.plot(l_iterations, l_loss)
