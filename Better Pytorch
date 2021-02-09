@@ -68,25 +68,37 @@ if os.path.isfile('Netz1.pt'):
     
 ### Calling the NN  ###
    
+### Calling the NN  ###
+   
+criterion = torch.nn.BCELoss()
+
+learning_rate = 1e-4
+
+optimizer = torch.optim.Adam(netz.parameters(), lr=learning_rate)
+
+
+train_x = torch.tensor(X_train_p)
+train_y = torch.tensor(y_train_p)
+
+##
+
+l_iterations = []
+l_loss = []
+    
+##
 for i in range(1000):
-    input = variable(X_train_p)
-    
-    out = netz(input.float())
-    
-    y = variable(y_train_p)
+    out = netz(train_x.float())
      
-    criterion = nn.BCELoss()
+    loss = criterion(out, train_y.float())
     
-    loss = criterion(out, y.float())
+    if i % 100 == 99:
+        print(i, loss.item())
+        
+    l_iterations.append(i)
+    l_loss.append(loss)
     
-    print(loss)   # nur eine Zahl da MSE
-    
-    #l_iterations.append(i)
-    #l_loss.append(loss)
-    
-    netz.zero_grad()
-    optimizer = optim.Adam(netz.parameters(), lr = 0.05)  #als Beispiel 
+    optimizer.zero_grad()
+    loss.backward()
     optimizer.step()
-
-
+    
 
