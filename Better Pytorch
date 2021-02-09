@@ -25,6 +25,9 @@ X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_p, y_p, test_size=
 
 dim_in = X_train_p.shape[1]
 
+## imp: one GPU
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 class MeinNetz(nn.Module)  :# erbt von module 
     def __init__(self):
