@@ -1,0 +1,88 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt 
+import seaborn as sns
+import os 
+
+df4 = pd.read_csv(r'C:\Users\Nico\Documents\Data\covid_df4.csv')
+
+# to make sure that only numeric data types are left
+df4.dtypes
+
+del df4['Unnamed: 0']
+
+ 
+### PCA ###
+from sklearn.decomposition import PCA
+
+n = len(df4.columns)
+pca = PCA(n_components=n)
+pca.fit(df4)
+
+
+# inspect results
+
+# pca.components_
+pca.explained_variance_
+pca.explained_variance_ratio_
+
+# plotting largest eigenvalues 
+
+plt.plot(pca.explained_variance_, '-o')
+plt.axhline(y=1, color='red')
+plt.xlabel('number of components')
+plt.ylabel('eigenvalues')
+
+# plotting explained variance 
+
+#import matplotlib.pyplot as plt
+plt.axhline(y=1, color='gray', linestyle=':')
+plt.ylim(.7, 1.05);
+plt.plot(np.cumsum(pca.explained_variance_ratio_), '-o')
+plt.xlabel('number of components')
+plt.ylabel('explained variance')
+
+# plotting forst two principal components 
+
+# 0,1 denote PC1 and PC2; change values for other PCs
+
+#import matplotlib.pyplot as plt
+# import seaborn as sns 
+xvector = pca.transform(df4)[:,0]
+yvector = pca.transform(df4)[:,1]
+
+# plot first two principal components
+sns.scatterplot(xvector, yvector, hue=df4.died, alpha=.80) #
+plt.show()
+
+
+## not really helping -- :(
+
+### Trying K Means ###
+
+from sklearn.cluster import KMeans 
+
+kmeans = KMeans(n_clusters=3) 
+kmeans.fit(df4) 
+y_kmeans = kmeans.predict(df4)
+
+# when vizualising, use PCA first
+# to make DF 2-dim :D
+
+fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
+sns.scatterplot(xvector, yvector, hue = df4.died, alpha=.80, ax=ax1)
+sns.scatterplot(xvector, yvector, hue = df4.died, alpha=.80, ax=ax2)
+
+
+## considering the Sum of squared distances
+# to be minimized!
+
+Sum_of_squared_distances = []
+K = range(1,15)
+
+for k in K:
+    km = KMeans(n_clusters=k)
+    km = km.fit(df4)
+    Sum_of_squared_distances.append(km.inertia_)
+    plt.plot(K, Sum_of_squared_distances, '-o')
+    plt.xlabel('k'); plt.ylabel('Sum_of_squared_distances'); plt.title('Elbow Method For Optimal k') #
