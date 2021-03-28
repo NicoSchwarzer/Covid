@@ -107,7 +107,10 @@ for i in range(1000):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
+
+# resaving
+if os.path.isfile('Netz1.pt'):
+    netz = torch.load('Netz1.pt')
     
 # visualizing loss
 
@@ -126,8 +129,3 @@ test_y = torch.tensor(y_test_p)
 
 out_test = netz(test_x.float()) 
 loss = criterion(out_test, test_y.float())
-
-           
-
-
-
