@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar 29 00:40:35 2021
+
+@author: Nico
+"""
+
 #########
 ## NN  ##
 #########
-
 
 import torch
 import torch.optim as optim
@@ -12,14 +18,15 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-df_pca = pd.read_csv(r'C:\Users\Nico\Documents\Data\covid_df_pca.csv')
-del df_pca['Unnamed: 0']
+df4 = pd.read_csv(r'C:\Users\Nico\Documents\Data\covid_df4.csv')
+df4.dtypes
 
-X_p = np.array(df_pca.drop('died', axis = 1))
-y_p = df_pca['died'].values
+del df4['Unnamed: 0']
+
+X_p = np.array(df4.drop('died', axis = 1))
+y_p = df4['died'].values
 
 X_train_p, X_test_p, y_train_p, y_test_p = train_test_split(X_p, y_p, test_size=0.3, random_state=30)
-
 
 ## defining the net 
 
@@ -64,21 +71,18 @@ print(netz)  # structure
 ###
 import os
 
-
 if os.path.isfile('Netz1.pt'):
     netz = torch.load('Netz1.pt')
 ###
     
 ### Calling the NN  ###
    
-### Calling the NN  ###
    
 criterion = torch.nn.BCELoss()
 
 learning_rate = 1e-4
 
 optimizer = torch.optim.Adam(netz.parameters(), lr=learning_rate)
-
 
 train_x = torch.tensor(X_train_p)
 train_y = torch.tensor(y_train_p)
@@ -104,4 +108,26 @@ for i in range(1000):
     loss.backward()
     optimizer.step()
     
+    
+# visualizing loss
+
+plt.figure()
+plt.plot(l_iterations, l_loss)
+plt.xlabel("# Iterations")
+plt.ylabel("Training loss")
+# nice 
+
+# final loss
+
+
+# predicting 
+test_x = torch.tensor(X_test_p)
+test_y = torch.tensor(y_test_p)
+
+out_test = netz(test_x.float()) 
+loss = criterion(out_test, test_y.float())
+
+           
+
+
 
